@@ -1,0 +1,71 @@
+Protein filter optimization
+========================================================
+author: Dave Latshaw II
+date: 1/29/2015
+
+Business Case
+========================================================
+
+This tool is to be used for the optimization of a filtration system
+used in perfusion based mAB bioprocesses. A % retention greater than
+40% indicates a failure of the system so the filter must be changed
+out. Using the tool allows the user to adjust the retention profiles
+and the time for change out to minimize the total amount of protein
+retained by the filter.
+
+This tool will allow for:
+
+- More precise scheduling of a filter change
+- More product capture
+- Minimized failure risk
+
+Optimization tool
+========================================================
+```{r, echo=FALSE}
+x<-seq(from=0,to=20000,by=100)
+y<-array(0,c(1,201))
+    for(i in 0:length(x)){
+      if((i*100<=3900) && (max(y)<=40)) {
+        y[i]<-i*100*.0041+.8364
+      } else if ((i*100<=3900) && (max(y)>40)){
+        y[i]<-i*100*.0015
+      } else if ((i*100>3900) && (max(y)<=40)){
+        y[i]<-i*100*.0015
+      } else if ((i*100>3900) && (max(y)>40)){
+        y[i]<-i*100*.0015
+      }
+    }
+```  
+
+```{r, echo=FALSE}
+    plot(x,y,ylim=c(0,40),
+         main="Filter retention as a function of cumulative protein",
+         xlab="Cumulative protein",
+         ylab="Retention %")  
+```  
+
+Optimal configuration that minimizes the total amound of protein retention and avoids retention limit.  
+
+Total retention
+========================================================
+
+To calculate the total amount of protein retained by the filter we use the trapezoidal
+method to estimate the integral of the discontinuous curve.  
+
+The total amount of protein retained per amount of protein passing through the filter during a full run in the optimal configuration is:
+```{r, echo=FALSE}
+ret_total<-0
+for (a in 2:(length(x))) {
+  ret_total<-ret_total+(y[a]*100+y[a-1]*100)/2
+}
+ret_total
+```
+
+Resources
+========================================================
+
+The tool itself is located at: https://davathin.shinyapps.io/data_products/
+
+The Github repository is located at: https://github.com/davathin/data_products
+
+Thank you!
